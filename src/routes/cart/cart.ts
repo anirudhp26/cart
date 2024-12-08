@@ -18,7 +18,7 @@ router.post('/checkout', async (req, res): Promise<any> => {
     return res.status(400).json({ message: 'Cart is empty' });
   }
 
-  let total = cartItems.reduce((sum, item) => sum + parseFloat(JSON.parse(item).price), 0);
+  let total = cartItems.reduce((sum: number, item: string) => sum + parseFloat(JSON.parse(item).price), 0);
 
   if (discountCode) {
     const validCode = await redis.get(`discount:${discountCode}`);

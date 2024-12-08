@@ -10,8 +10,6 @@ app.use(cors({
     credentials: true
 }));
 
-const PORT = process.env.PORT || 4000;
-
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
@@ -28,6 +26,4 @@ function checkAuth(req: Request, res: Response, next: any) {
 app.use('/cart', cartRoutes);
 app.use('/admin', checkAuth, adminRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+export { app };
