@@ -28,20 +28,17 @@ router.post('/checkout', (req, res) => __awaiter(void 0, void 0, void 0, functio
     if (cartItems.length === 0) {
         return res.status(400).json({ message: 'Cart is empty' });
     }
-    // Calculate total amount
     let total = cartItems.reduce((sum, item) => sum + parseFloat(JSON.parse(item).price), 0);
-    // Check discount code validity
     if (discountCode) {
         const validCode = yield redis_1.default.get(`discount:${discountCode}`);
         if (validCode) {
-            total *= 0.9; // Apply 10% discount
-            yield redis_1.default.del(`discount:${discountCode}`); // Invalidate code
+            total *= 0.9;
+            yield redis_1.default.del(`discount:${discountCode}`);
         }
         else {
             return res.status(400).json({ message: 'Invalid discount code' });
         }
     }
-    // Clear the cart and increment total orders
     yield redis_1.default.del(cartKey);
     yield redis_1.default.incr('totalOrders');
     res.status(200).json({ message: 'Order placed successfully', total });

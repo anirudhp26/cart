@@ -16,11 +16,10 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const redis_1 = __importDefault(require("../../services/redis"));
 const nthOrder = 2;
-router.post('/generate-discount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/get-discount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const totalOrders = parseInt((yield redis_1.default.get('totalOrders')) || '0');
-    console.log(totalOrders);
     if ((totalOrders + 1) % nthOrder === 0) {
-        const code = `DISCOUNT${totalOrders + 1}`;
+        const code = `10POFF${totalOrders + 1}`;
         yield redis_1.default.set(`discount:${code}`, 'true');
         yield redis_1.default.rpush('discountCodes', code);
         res.status(200).json({ code });
@@ -29,7 +28,7 @@ router.post('/generate-discount', (req, res) => __awaiter(void 0, void 0, void 0
         res.status(400).json({ message: `Not eligible for a discount code.` });
     }
 }));
-router.get('/stats', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/order-stats', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const orders = (yield redis_1.default.get('totalOrders')) || '0';
     const totalOrders = parseInt(orders);
     const discountCodes = yield redis_1.default.lrange('discountCodes', 0, -1);
