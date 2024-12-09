@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const supertest_1 = __importDefault(require("supertest"));
 const redis_1 = __importDefault(require("../services/redis"));
-const index_1 = require("../index");
+const app_1 = require("../app");
 beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
     yield redis_1.default.flushall();
 }));
@@ -23,7 +23,7 @@ afterAll(() => {
 });
 describe('Cart API', () => {
     it('should add an item to the cart', () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.app).post('/cart/add-item').send({
+        const res = yield (0, supertest_1.default)(app_1.app).post('/cart/add-item').send({
             userId: '1',
             item: { name: 'item1', price: 100, quantity: 1, currency: 'USD' },
         });
@@ -35,7 +35,7 @@ describe('Cart API', () => {
     }));
     it('should checkout successfully without a discount code', () => __awaiter(void 0, void 0, void 0, function* () {
         yield redis_1.default.rpush('cart:1', JSON.stringify({ name: 'item1', price: 100, quantity: 1, currency: 'USD' }));
-        const res = yield (0, supertest_1.default)(index_1.app).post('/cart/checkout').send({
+        const res = yield (0, supertest_1.default)(app_1.app).post('/cart/checkout').send({
             userId: '1',
         });
         expect(res.statusCode).toBe(200);
@@ -47,7 +47,7 @@ describe('Cart API', () => {
     it('should apply a discount code during checkout', () => __awaiter(void 0, void 0, void 0, function* () {
         yield redis_1.default.rpush('cart:1', JSON.stringify({ name: 'item1', price: 100, quantity: 1, currency: 'USD' }));
         yield redis_1.default.set('discount:DISCOUNT5', 'true');
-        const res = yield (0, supertest_1.default)(index_1.app).post('/cart/checkout').send({
+        const res = yield (0, supertest_1.default)(app_1.app).post('/cart/checkout').send({
             userId: '1',
             discountCode: 'DISCOUNT5',
         });
@@ -56,7 +56,7 @@ describe('Cart API', () => {
     }));
     it('should fail checkout with an invalid discount code', () => __awaiter(void 0, void 0, void 0, function* () {
         yield redis_1.default.rpush('cart:1', JSON.stringify({ name: 'item1', price: 100, quantity: 1, currency: 'USD' }));
-        const res = yield (0, supertest_1.default)(index_1.app).post('/cart/checkout').send({
+        const res = yield (0, supertest_1.default)(app_1.app).post('/cart/checkout').send({
             userId: '1',
             discountCode: 'INVALID',
         });

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import redis from '../services/redis';
-import { app } from '../index';
+import { app } from '../app';
 
 interface Item {
   name: string;
